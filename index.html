@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Registro Alimenticio Consciente</title>
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0; padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fafb;
+    color: #333;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  h1 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    text-align: center;
+  }
+  form {
+    background: #ffffff;
+    padding: 1.2rem 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    transition: opacity 0.4s ease;
+  }
+  label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: #34495e;
+  }
+  select, input[type="text"], textarea {
+    width: 100%;
+    margin-top: 0.4rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #ccd0d5;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #2c3e50;
+    font-family: inherit;
+  }
+  input[type="range"] {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .checkbox-group {
+    margin-top: 0.5rem;
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+  }
+  .checkbox-group label {
+    display: block;
+    font-weight: 400;
+    margin-top: 0.3rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 6px;
+    vertical-align: middle;
+    transform: scale(1.1);
+  }
+  .radio-group {
+    margin-top: 0.5rem;
+  }
+  .radio-group label {
+    display: inline-block;
+    margin-right: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+  }
+  button {
+    margin-top: 2rem;
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.22s ease;
+  }
+  button:hover,
+  button:focus {
+    background: #3a78c2;
+    outline: none;
+  }
+  .result-container {
+    margin-top: 1.6rem;
+    background: #e8f0fe;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.3;
+    color: #2c3e50;
+    max-height: 340px;
+    overflow-y: auto;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .result-container.visible {
+    opacity: 1;
+  }
+  .highlight {
+    color: #2a7a2a;
+    font-weight: 700;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+  small {
+    font-weight: 400;
+    color: #57606a;
+  }
+  .tip-box {
+    background: #d0e6ff;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    font-style: italic;
+    color: #24559a;
+    user-select: none;
+    text-align: center;
+  }
+  .breathing-exercise {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+  .breathing-circle {
+    margin: 0.5rem auto;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #8cb3f2;
+    box-shadow: 0 0 20px rgba(140, 179, 242, 0.6);
+    animation: breatheIdle 4000ms ease-in-out infinite;
+  }
+  @keyframes breatheIdle {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 20px rgba(140, 179, 242, 0.6);
+    }
+    50% {
+      transform: scale(1.3);
+      box-shadow: 0 0 40px rgba(140, 179, 242, 1);
+    }
+  }
+  .breathing-text {
+    font-weight: 600;
+    color: #4a6fa5;
+    margin-top: 0.25rem;
+  }
+  .sat-hunger-legend {
+    margin-top: 4px;
+    color: #565656;
+    font-weight: 600;
+    font-style: italic;
+    text-align: center;
+  }
+  .summary-container {
+    margin-top: 1rem;
+    background: #eef6ff;
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.95rem;
+    color: #2c3e50;
+  }
+  .summary-container h3 {
+    margin-top: 0;
+  }
+  .records-section {
+    margin-top: 2rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    padding: 1rem 1.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .records-section h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+  .record-item {
+    border-bottom: 1px solid #ccd0d5;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  .record-item:last-child {
+    border-bottom: none;
+  }
+  .record-date {
+    font-weight: 700;
+    color: #45648a;
+  }
+  @media (max-width: 480px) {
+    body {
+      max-width: 100%;
+      padding: 1rem 0.8rem;
+    }
+    .checkbox-group {
+      columns: 1;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>Registro Consciente de tu Alimentación</h1>
+<form id="registroForm" autocomplete="off" aria-live="polite">
+  <label for="tiempoUltimaComida">¿Hace cuánto tiempo comiste la última vez?</label>
+  <select id="tiempoUltimaComida" required>
+    <option value="" disabled selected>Selecciona una opción</option>
+    <option value="menos1">Menos de 1 hora</option>
+    <option value="entre1y2">Entre 1 y 2 horas</option>
+    <option value="mas2">Más de 2 horas</option>
+  </select>
+
+  <label>En este momento, ¿cómo te sientes en general? (elige las emociones que más se parecen a lo que sientes)</label>
+  <div class="checkbox-group" id="emocionesGroup" role="group" aria-label="Emociones actuales">
+    <label><input type="checkbox" value="Alegría" /> Alegría</label>
+    <label><input type="checkbox" value="Gratitud" /> Gratitud</label>
+    <label><input type="checkbox" value="Amor" /> Amor</label>
+    <label><input type="checkbox" value="Esperanza" /> Esperanza</label>
+    <label><input type="checkbox" value="Satisfacción" /> Satisfacción</label>
+    <label><input type="checkbox" value="Curiosidad" /> Curiosidad</label>
+    <label><input type="checkbox" value="Confusión" /> Confusión</label>
+    <label><input type="checkbox" value="Sorpresa" /> Sorpresa</label>
+    <label><input type="checkbox" value="Tristeza" /> Tristeza</label>
+    <label><input type="checkbox" value="Frustración" /> Frustración</label>
+    <label><input type="checkbox" value="Ansiedad" /> Ansiedad</label>
+    <label><input type="checkbox" value="Aburrimiento" /> Aburrimiento</label>
+    <label><input type="checkbox" value="Cansancio" /> Cansancio</label>
+    <label><input type="checkbox" value="Miedo" /> Miedo</label>
+    <label><input type="checkbox" value="Enfado" /> Enfado</label>
+    <label><input type="checkbox" value="Desesperación" /> Desesperación</label>
+    <label><input type="checkbox" value="Soledad" /> Soledad</label>
+  </div>
+
+  <label>¿Has tenido alguna discusión o situación que te haya generado estrés recientemente?</label>
+  <div class="radio-group" id="discusionGroup" role="radiogroup" aria-label="¿Has tenido alguna discusión reciente?">
+    <label><input type="radio" name="discusion" value="Sí" required /> Sí</label>
+    <label><input type="radio" name="discusion" value="No" /> No</label>
+  </div>
+
+  <label>¿Hay algo que te preocupe en este momento?</label>
+  <div class="radio-group" id="preocupacionGroup" role="radiogroup" aria-label="¿Te preocupa algo en este momento?">
+    <label><input type="radio" name="preocupacion" value="Sí" required /> Sí</label>
+    <label><input type="radio" name="preocupacion" value="No" /> No</label>
+  </div>
+  <label for="detallePreocupacion" style="margin-top: 0.2rem; font-weight: 400; font-size: 0.9rem; color: #57606a;">(Si respondiste sí, cuéntanos brevemente de qué se trata)</label>
+  <textarea id="detallePreocupacion" placeholder="Escribe aquí..." disabled></textarea>
+
+  <label>¿Has bebido agua en la última hora?</label>
+  <div class="radio-group" id="aguaGroup" role="radiogroup" aria-label="¿Has bebido agua en la última hora?">
+    <label><input type="radio" name="agua" value="Sí" required /> Sí</label>
+    <label><input type="radio" name="agua" value="No" /> No</label>
+  </div>
+
+  <label>En una escala del 1 al 10, ¿qué tanta hambre sientes ahora?</label>
+  <input type="range" id="hambre" min="1" max="10" value="5" step="1" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5" aria-label="Nivel de hambre" />
+  <div class="sat-hunger-legend" id="hambreValor" aria-live="polite" aria-atomic="true">Moderadamente hambriento</div>
+
+  <label>Sensaciones corporales que sientes ahora (antes de comer, elige las que corresponden):</label>
+  <div class="checkbox-group" id="sensacionesGroup" role="group" aria-label="Sensaciones corporales actuales">
+    <label><input type="checkbox" value="Sueño" /> Sueño</label>
+    <label><input type="checkbox" value="Dolor general" /> Dolor general</label>
+    <label><input type="checkbox" value="Ruidos en la tripa" /> Ruidos en la tripa</label>
+    <label><input type="checkbox" value="Incomodidad estomacal" /> Incomodidad estomacal</label>
+    <label><input type="checkbox" value="Tensión muscular" /> Tensión muscular</label>
+    <label><input type="checkbox" value="Náuseas" /> Náuseas</label>
+    <label><input type="checkbox" value="Mareos" /> Mareos</label>
+    <label><input type="checkbox" value="Palpitaciones" /> Palpitaciones</label>
+    <label><input type="checkbox" value="Calma" /> Sensación de calma</label>
+    <label><input type="checkbox" value="Ninguna" /> Ninguna</label>
+  </div>
+
+  <label for="tipoComida">¿Qué tipo de comida te apetece?</label>
+  <input type="text" id="tipoComida" placeholder="Ej. algo dulce, salado, saludable..." autocomplete="off" />
+ 
+  <label>¿Crees que estás comiendo porque...? (puedes elegir más de una opción)</label>
+  <div class="checkbox-group" id="razonesGroup" role="group" aria-label="Razones para comer">
+    <label><input type="checkbox" value="Tengo hambre real y necesito nutrirme" /> Tengo hambre real y necesito nutrirme</label>
+    <label><input type="checkbox" value="Me siento aburrida y busco distracción" /> Me siento aburrida y busco distracción</label>
+    <label><input type="checkbox" value="Estoy estresada o ansiosa" /> Estoy estresada o ansiosa</label>
+    <label><input type="checkbox" value="Tengo sed o falta de hidratación" /> Tengo sed o falta de hidratación</label>
+    <label><input type="checkbox" value="Es la hora habitual de comer aunque no tenga hambre" /> Es la hora habitual de comer aunque no tenga hambre</label>
+    <label><input type="checkbox" value="Hay comida disponible y la tentación es fuerte" /> Hay comida disponible y la tentación es fuerte</label>
+    <label><input type="checkbox" value="Busco confort emocional" /> Busco confort emocional</label>
+    <label><input type="checkbox" value="Otra razón" id="otraRazonCheck" /> Otra razón (por favor detalla abajo)</label>
+  </div>
+  <textarea id="detalleOtraRazon" placeholder="Si marcaste 'Otra razón', escríbela aquí..." disabled></textarea>
+
+  <label>¿Cuál de estas necesidades crees que te gustaría cubrir en este momento? (puedes elegir varias)</label>
+  <div class="checkbox-group" id="necesidadesGroup" role="group" aria-label="Necesidades actuales">
+    <label><input type="checkbox" value="Sentirme conectada con alguien" /> Sentirme conectada con alguien</label>
+    <label><input type="checkbox" value="Tener autonomía y control" /> Tener autonomía y control</label>
+    <label><input type="checkbox" value="Sentirme segura" /> Sentirme segura</label>
+    <label><input type="checkbox" value="Ser reconocida o valorada" /> Ser reconocida o valorada</label>
+    <label><input type="checkbox" value="Sentirme comprendida" /> Sentirme comprendida</label>
+    <label><input type="checkbox" value="Disfrutar y divertirme" /> Disfrutar y divertirme</label>
+    <label><input type="checkbox" value="Expresar creatividad" /> Expresar creatividad</label>
+    <label><input type="checkbox" value="Recibir amor" /> Recibir amor</label>
+    <label><input type="checkbox" value="Encontrar paz o calma" /> Encontrar paz o calma</label>
+  </div>
+
+  <label for="queNecesitas">Ahora que has reflexionado un poco, ¿qué crees que necesitas hacer en este momento?</label>
+  <textarea id="queNecesitas" placeholder="Escribe tu respuesta o elige una sugerencia más abajo..."></textarea>
+
+  <label>Sugerencias para elegir si no estás segura</label>
+  <div class="checkbox-group" id="sugerenciasGroup" role="group" aria-label="Sugerencias para elegir">
+    <label><input type="checkbox" value="Respirar profundamente durante 5 minutos" /> Respirar profundamente durante 5 minutos</label>
+    <label><input type="checkbox" value="Beber un vaso de agua" /> Beber un vaso de agua</label>
+    <label><input type="checkbox" value="Esperar 10 minutos antes de decidir" /> Esperar 10 minutos antes de decidir</label>
+    <label><input type="checkbox" value="Hablar con un amigo o familiar" /> Hablar con un amigo o familiar</label>
+    <label><input type="checkbox" value="Escuchar música que te guste" /> Escuchar música que te guste</label>
+    <label><input type="checkbox" value="Salir a caminar o tomar aire fresco" /> Salir a caminar o tomar aire fresco</label>
+    <label><input type="checkbox" value="Anotar tus pensamientos y emociones en un diario" /> Anotar tus pensamientos y emociones en un diario</label>
+    <label><input type="checkbox" value="Practicar una breve meditación o mindfulness" /> Practicar una breve meditación o mindfulness</label>
+    <label><input type="checkbox" value="Realizar alguna actividad que disfrutes (leer, pintar, etc.)" /> Realizar alguna actividad que disfrutes (leer, pintar, etc.)</label>
+    <label><input type="checkbox" value="Comer una porción moderada si tienes hambre real" /> Comer una porción moderada si tienes hambre real</label>
+  </div>
+
+  <button type="submit" aria-label="Registrar y analizar respuestas">Registrar y Analizar</button>
+</form>
+
+<div class="tip-box" id="tipBox" aria-live="polite" aria-atomic="true">
+<!-- Aquí aparecerá la frase del día -->
+</div>
+
+<div class="result-container" id="resultado" aria-live="polite" role="region" aria-atomic="true" style="display:none;">
+  <!-- Aquí aparecerán los resultados -->
+</div>
+
+<div class="summary-container" id="summaryContainer" style="display:none;" aria-live="polite" aria-atomic="true">
+  <h3>Balance de hambre emocional vs hambre biológica</h3>
+  <p id="balanceText"></p>
+  <div style="width:100%; height: 16px; background:#ddd; border-radius:8px; overflow:hidden; margin-top:4px;">
+    <div id="emotionBar" style="height:16px; background:#f28c8c; width:0%; float:left;"></div>
+    <div id="bioBar" style="height:16px; background:#8cbbf2; width:0%; float:left;"></div>
+  </div>
+</div>
+
+<section class="records-section" aria-label="Historial de registros">
+  <h2>Historial de autoregistros</h2>
+  <div id="recordsList" aria-live="polite" aria-atomic="true"></div>
+  <button id="clearHistoryBtn" style="margin-top: 1rem; background:#bb3e03; color:white; border:none; padding:0.6rem 1rem; border-radius:6px; cursor:pointer;">Borrar historial completo</button>
+</section>
+
+<div class="breathing-exercise" style="display:none;" aria-label="Ejercicio de respiración guiado" role="region" id="breathingSection">
+  <div class="breathing-circle" aria-hidden="true"></div>
+  <div class="breathing-text" id="breathingText" aria-live="polite" aria-atomic="true">Inhala... Exhala...</div>
+  <button id="startBreath" aria-label="Iniciar ejercicio de respiración">Iniciar ejercicio (1 ciclo)</button>
+</div>
+
+<script>
+  // Enable or disable detallePreocupacion textarea based on radio selection
+  const preocupacionRadios = document.getElementsByName('preocupacion');
+  const detallePreocupacion = document.getElementById('detallePreocupacion');
+  preocupacionRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      detallePreocupacion.disabled = (radio.value !== 'Sí');
+      if (detallePreocupacion.disabled) detallePreocupacion.value = '';
+    });
+  });
+
+  // Enable or disable detalleOtraRazon textarea based on checkbox
+  const otraRazonCheck = document.getElementById('otraRazonCheck');
+  const detalleOtraRazon = document.getElementById('detalleOtraRazon');
+  otraRazonCheck.addEventListener('change', () => {
+    detalleOtraRazon.disabled = !otraRazonCheck.checked;
+    if (detalleOtraRazon.disabled) detalleOtraRazon.value = '';
+  });
+
+  const hambreRange = document.getElementById('hambre');
+  const hambreValor = document.getElementById('hambreValor');
+  hambreRange.addEventListener('input', () => {
+    hambreValor.textContent = getHungerLegend(hambreRange.value);
+    hambreRange.setAttribute('aria-valuenow', hambreRange.value);
+  });
+  // Initialize hunger legend on page load
+  hambreValor.textContent = getHungerLegend(hambreRange.value);
+
+  function getHungerLegend(value) {
+    const v = parseInt(value);
+    if (v<= 1) return 'Terriblemente hambriento';
+    else if (v === 2) return 'Muy hambriento';
+    else if (v === 3) return 'Notablemente hambriento';
+    else if (v === 4) return 'Moderadamente hambriento';
+    else if (v === 5) return 'Un poco hambriento';
+    else if (v === 6) return 'Neutral, ni hambre ni saciedad';
+    else if (v === 7) return 'Satisfecho';
+    else if (v === 8) return 'Casi lleno';
+    else if (v === 9) return 'Incomodamente lleno';
+    else if (v === 10) return 'Terriblemente lleno';
+    else return '';
+  }
+
+  // Array de frases diarias
+  const dailyPhrases = [
+    "Come con la intención de nutrirte, no de castigarte ni distraerte.",
+    "Escucha las señales de tu cuerpo y respeta tu hambre y saciedad.",
+    "Cada momento de consciencia es un paso hacia una relación sana con la comida.",
+    "Practica la paciencia y la amabilidad contigo misma.",
+    "Respira profundamente antes de comer, conecta con tu cuerpo.",
+    "No se trata de perfección, sino de progreso y cuidado personal.",
+    "Reconoce tus emociones y aprende a responder a ellas sin juzgar.",
+    "La alimentación consciente nutre tu cuerpo y tu mente.",
+    "Permítete disfrutar la comida sin culpa ni prisa.",
+    "Cuida tu mente tanto como cuidas tu alimentación."
+  ];
+
+  function showDailyPhrase() {
+    const tipBox = document.getElementById('tipBox');
+    const phrase = dailyPhrases[Math.floor(Math.random() * dailyPhrases.length)];
+    tipBox.textContent = phrase;
+  }
+  showDailyPhrase();
+  setInterval(showDailyPhrase, 60000);
+
+  const STORAGE_KEY = 'mindfulEatingRecords';
+
+  function saveRecord(record) {
+    const records = loadRecords();
+    records.push(record);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  }
+
+  function loadRecords() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function clearRecords() {
+    if (confirm('¿Seguro que quieres borrar todo el historial? Esta acción no se puede deshacer.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      renderRecords();
+      resultado.style.display = 'none';
+      summaryContainer.style.display = 'none';
+      alert('Historial borrado');
+    }
+  }
+
+  function renderRecords() {
+    const recordsList = document.getElementById('recordsList');
+    const records = loadRecords();
+    if (records.length === 0) {
+      recordsList.innerHTML = '<p style="text-align:center; color:#888;">No hay registros guardados</p>';
+      return;
+    }
+    const grouped = {};
+    records.forEach(r => {
+      const d = new Date(r.timestamp);
+      const key = d.toISOString().slice(0,10);
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(r);
+    });
+    const keys = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+
+    let html = '';
+    keys.forEach(dateKey => {
+      const dailyRecords = grouped[dateKey];
+      let bioHungerPoints = 0;
+      let emotionHungerPoints = 0;
+      dailyRecords.forEach(rec =>{
+        const bio = rec.razones && rec.razones.includes("Tengo hambre real y necesito nutrirme") ? 1 : 0;
+        bioHungerPoints += bio;
+        const emotionalReasons = [
+          "Me siento aburrida y busco distracción",
+          "Estoy estresada o ansiosa",
+          "Busco confort emocional"
+        ];
+        const hasEmo = rec.razones && rec.razones.some(rz=> emotionalReasons.includes(rz.trim()));
+        if (hasEmo) emotionHungerPoints++;
+      });
+      let analysisText = '';
+      if(bioHungerPoints > emotionHungerPoints) {
+        analysisText = 'Predomina hambre biológica.';
+      } else if(emotionHungerPoints > bioHungerPoints) {
+        analysisText = 'Predomina hambre emocional.';
+      } else {
+        analysisText = 'Balance entre hambre biológica y emocional.';
+      }
+      const dateObj = new Date(dateKey);
+      const dateStr = dateObj.toLocaleDateString('es-ES', {weekday:'short', year:'numeric', month:'short', day:'numeric'});
+
+      html += `<div class="record-item" tabindex="0" aria-label="Registro del ${dateStr}">
+        <div class="record-date">${dateStr}</div>
+        <div>${dailyRecords.length} registro(s) ese día</div>
+        <strong>Análisis</strong> ${analysisText}
+      </div>`;
+    });
+    recordsList.innerHTML = html;
+  }
+
+  const form = document.getElementById('registroForm');
+  const resultado = document.getElementById('resultado');
+  const summaryContainer = document.getElementById('summaryContainer');
+  const breathingSection = document.getElementById('breathingSection');
+  const startBreathBtn = document.getElementById('startBreath');
+  const breathingText = document.getElementById('breathingText');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const tiempoUltimaComida = document.getElementById('tiempoUltimaComida').value;
+
+    const emociones = [...document.querySelectorAll('#emocionesGroup input[type=checkbox]:checked')]
+                      .map(el => el.value);
+
+    const discusionRadio = document.querySelector('input[name="discusion"]:checked');
+    const discusion = discusionRadio ? discusionRadio.value : '';
+
+    const preocupacionRadio = document.querySelector('input[name="preocupacion"]:checked');
+    const preocupacion = preocupacionRadio ? preocupacionRadio.value : '';
+    const detallePreocupacionText = detallePreocupacion.value.trim();
+
+    const aguaRadio = document.querySelector('input[name="agua"]:checked');
+    const agua = aguaRadio ? aguaRadio.value : '';
+
+    const hambre = parseInt(hambreRange.value, 10);
+
+    let razones = [...document.querySelectorAll('#razonesGroup input[type=checkbox]:checked')].map(el => el.value);
+    if (otraRazonCheck.checked) {
+      const detalleOtra = detalleOtraRazon.value.trim();
+      if (detalleOtra.length > 0) {
+        razones.push('Otra razón: ' + detalleOtra);
+      }
+    }
+
+    const necesidades = [...document.querySelectorAll('#necesidadesGroup input[type=checkbox]:checked')]
+                       .map(el => el.value);
+
+    const queNecesitas = document.getElementById('queNecesitas').value.trim();
+
+    const sugerencias = [...document.querySelectorAll('#sugerenciasGroup input[type=checkbox]:checked')]
+                        .map(el => el.value);
+
+    const sensaciones = [...document.querySelectorAll('#sensacionesGroup input[type=checkbox]:checked')]
+                       .map(el => el.value);
+
+    const tipoComida = document.getElementById('tipoComida').value.trim();
+
+    let analysis = '<h2>Análisis y Recomendaciones<ul>';
+
+    let bioHungerScore = 0;
+    let emoHungerScore = 0;
+    if (hambre >= 7 && (razones.some(r => r.includes('Tengo hambre real')))) {
+      bioHungerScore += 2;
+    } else if (hambre >= 5) {
+      bioHungerScore += 1;
+    }
+    const emotionalTriggers = ['Aburrimiento', 'Ansiedad', 'Frustración', 'Enfado', 'Desesperación', 'Soledad'];
+    if (razones.some(r => r.toLowerCase().includes('aburrida') || r.toLowerCase().includes('estresada') || r.toLowerCase().includes('confort emocional'))) emoHungerScore += 2;
+    emociones.forEach(em => {
+      if (emotionalTriggers.includes(em)) emoHungerScore++;
+    });
+
+    const physicalHungerSensation = ['Ruidos en la tripa', 'Incomodidad estomacal'];
+    const physicalEmoSensation = ['Tensión muscular', 'Náuseas', 'Mareos', 'Palpitaciones', 'Dolor general', 'Sueño'];
+
+    sensaciones.forEach(s => {
+      if (physicalHungerSensation.includes(s)) bioHungerScore++;
+      if (physicalEmoSensation.includes(s)) emoHungerScore++;
+    });
+
+    if (bioHungerScore > emoHungerScore) {
+      analysis += '<li><span class="highlight">Parece que tu hambre es mayormente biológica.</span> Escucha a tu cuerpo y come una porción moderada y nutritiva.</li>';
+    } else if (emoHungerScore > bioHungerScore) {
+      analysis += '<li><span class="highlight">Tu hambre parece estar más relacionada con emociones.</span> Considera probar algunas estrategias para manejar el estrés o aburrimiento antes de comer.</li>';
+    } else {
+      analysis += '<li><span class="highlight">Tu hambre tiene componentes emocionales y biológicos equilibrados.</span> Atiende ambas partes para tomar una decisión saludable.</li>';
+    }
+
+    if (hambre >= 7 && (tiempoUltimaComida === 'mas2' || tiempoUltimaComida === 'entre1y2')) {
+      analysis += '<li>Parece que tienes hambre real debido al tiempo transcurrido desde tu última comida.</li>';
+    } else if (hambre < 4 && razones.includes('Tengo hambre real y necesito nutrirme')) {
+      analysis += '<li>Tu nivel de hambre es bajo, podría ser que emociones o hábitos te estén motivando a comer.</li>';
+    }
+
+    if (emociones.includes('Ansiedad') || emociones.includes('Frustración') || emociones.includes('Enfado') || discusion === 'Sí' || preocupacion === 'Sí') {
+      analysis += '<li>Has reportado estrés o emociones fuertes. Prueba técnicas como respiración profunda o meditación.</li>';
+    }
+
+    if (emociones.includes('Aburrimiento') || razones.some(r => r.toLowerCase().includes('aburrida'))) {
+      analysis += '<li>Posible aburrimiento. Intenta distraerte con actividades que disfrutes.</li>';
+    }
+
+    if (agua === 'No' || razones.some(r => r.toLowerCase().includes('sed'))) {
+      analysis += '<li>No olvides hidratarte; a veces la sed se confunde con hambre.</li>';
+    }
+
+    if (necesidades.length > 0) {
+      analysis += '<li>Has seleccionado estas necesidades: ' + necesidades.join(', ') + '. Considera satisfacerlas con alternativas saludables.</li>';
+    }
+
+    if (sugerencias.length > 0) {
+      analysis += '<li>Has focalizado estas sugerencias para probar: ' + sugerencias.join(', ') + '.</li>';
+    }
+
+    if (queNecesitas.length > 0) {
+      analysis += '<li>Reflexión personal: ' + queNecesitas + '</li>';
+    } else {
+      analysis += '<li>Si no estás segura qué hacer, intenta probar algunas sugerencias para decidir conscientemente.</li>';
+    }
+
+    analysis += '</ul>';
+
+    resultado.innerHTML = analysis;
+    resultado.style.display = 'block';
+    setTimeout(() => resultado.classList.add('visible'), 10);
+
+    summaryContainer.style.display = 'block';
+    const total = bioHungerScore + emoHungerScore || 1;
+    const bioPercent = Math.round((bioHungerScore / total) * 100);
+    const emoPercent = Math.round((emoHungerScore / total) * 100);
+    document.getElementById('balanceText').textContent = `Hambre biológica: ${bioPercent}% — Hambre emocional: ${emoPercent}%`;
+    document.getElementById('emotionBar').style.width = emoPercent + '%';
+    document.getElementById('bioBar').style.width = bioPercent + '%';
+
+    const record = {
+      timestamp: Date.now(),
+      tiempoUltimaComida,
+      emociones,
+      discusion,
+      preocupacion,
+      detallePreocupacionText,
+      agua,
+      hambre,
+      razones,
+      necesidades,
+      queNecesitas,
+      sugerencias,
+      sensaciones,
+      tipoComida
+    };
+    saveRecord(record);
+    renderRecords();
+
+    setTimeout(() => {
+      resultado.scrollIntoView({behavior: 'smooth'});
+    }, 180);
+
+    const needsBreathing = emociones.some(em =>
+      ['Ansiedad','Frustración','Enfado','Desesperación'].includes(em)) ||
+      discusion === 'Sí' || preocupacion === 'Sí' ||
+      sugerencias.some(s => s.toLowerCase().includes('respirar'));
+    if (needsBreathing) {
+      breathingSection.style.display = 'block';
+      breathingText.textContent = 'Inhala... Exhala...';
+      startBreathBtn.focus();
+    } else {
+      breathingSection.style.display = 'none';
+    }
+  });
+
+  startBreathBtn.addEventListener('click', () => {
+    const instructions = [
+      'Inhala lentamente por la nariz (4 seg)',
+      'Sostén la respiración (4 seg)',
+      'Exhala lentamente por la boca (4 seg)',
+      'Sostén sin aire (4 seg)'
+    ];
+    let step = 0;
+    const breatheCircle = document.querySelector('.breathing-circle');
+
+    function nextStep() {
+      breathingText.textContent = instructions[step];
+      if (step === 0) {
+        breatheCircle.style.animation = 'breatheIn 4000ms forwards';
+      } else if (step === 2) {
+        breatheCircle.style.animation = 'breatheOut 4000ms forwards';
+      }
+      step++;
+      if (step < instructions.length) {
+        setTimeout(nextStep, 4000);
+      } else {
+        breathingText.textContent = 'Ejercicio completado. Siéntete en calma.';
+        breatheCircle.style.animation = 'breatheIdle 4000ms ease-in-out infinite';
+      }
+    }
+
+    nextStep();
+  });
+
+  const styleSheet = document.createElement('style');
+  styleSheet.innerHTML = `
+    @keyframes breatheIn {
+      0% {transform: scale(1); box-shadow: 0 0 20px rgba(140, 179, 242, 0.6);}
+      100% {transform: scale(1.3); box-shadow: 0 0 40px rgba(140, 179, 242, 1);}
+    }
+    @keyframes breatheOut {
+      0% {transform: scale(1.3); box-shadow: 0 0 40px rgba(140, 179, 242, 1);}
+      100% {transform: scale(1); box-shadow: 0 0 20px rgba(140, 179, 242, 0.6);}
+    }
+  `;
+  document.head.appendChild(styleSheet);
+
+  const recordsList = document.getElementById('recordsList');
+  const clearBtn = document.getElementById('clearHistoryBtn');
+  clearBtn.addEventListener('click', clearRecords);
+  renderRecords();
+</script>
+
+</body>
+</html>
